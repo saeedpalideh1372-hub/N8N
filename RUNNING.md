@@ -1,0 +1,1 @@
+Creating a new markdown file with instructions on how to run the C# .NET 6 project
