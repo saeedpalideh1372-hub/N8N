@@ -1,0 +1,1 @@
+Using Codex: focus on prototypes, prompt design, iteration, safety checks, unit tests, and CI. Keep prompts minimal, mock external calls, review outputs, and log decisions. Start small and iterate.
