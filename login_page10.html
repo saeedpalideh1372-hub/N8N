@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ورود</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --accent:#0b6cf0;
+      --muted:#64748b;
+      --danger:#ef4444;
+      --radius:12px;
+      --gap:16px;
+      font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,var(--bg),#eef2f7 60%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:100%;
+      max-width:420px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:0 6px 24px rgba(15,23,42,0.08);
+      padding:28px;
+      direction:rtl;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .logo{
+      width:48px;height:48px;flex:0 0 48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7dd3fc);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;
+    }
+    h1{font-size:20px;margin:0 0 2px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    form{margin-top:18px}
+    label{display:block;font-size:13px;margin-bottom:8px}
+    .field{margin-bottom:14px}
+    input[type="text"],input[type="password"]{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #e6eef9;
+      border-radius:8px;
+      background:#fbfdff;
+      font-size:14px;
+      outline:none;
+      transition:box-shadow .15s,border-color .15s;
+    }
+    input::placeholder{color:#a3b0c2}
+    input:focus{box-shadow:0 6px 18px rgba(11,108,240,0.08);border-color:var(--accent)}
+
+    .password-wrap{position:relative}
+    .toggle-pass{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:0;padding:6px;cursor:pointer;color:var(--muted);font-size:13px}
+
+    .actions{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+    .forgot{font-size:13px;color:var(--accent);text-decoration:none}
+    .forgot:focus{outline:2px solid rgba(11,108,240,0.18);outline-offset:2px}
+
+    button[type="submit"]{
+      margin-top:18px;
+      width:100%;
+      padding:12px 14px;
+      background:var(--accent);
+      color:white;border:0;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;
+      box-shadow:0 8px 18px rgba(11,108,240,0.14);
+    }
+    button[disabled]{opacity:.6;cursor:not-allowed;box-shadow:none}
+
+    .alert{margin-top:12px;padding:10px 12px;border-radius:8px;background:#fff4f4;border:1px solid rgba(239,68,68,0.12);color:var(--danger);font-size:13px}
+
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+    @media (max-width:480px){
+      .card{padding:18px}
+      .logo{width:40px;height:40px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">N8</div>
+      <div>
+        <h1>ورود به پنل</h1>
+        <p class="lead">لطفاً با نام کاربری و کلمه عبور وارد شوید</p>
+      </div>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">نام کاربری یا ایمیل</label>
+        <input id="username" name="username" type="text" inputmode="email" autocomplete="username" placeholder="مثال: user@example.com" required>
+      </div>
+
+      <div class="field password-wrap">
+        <label for="password">کلمه عبور</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="کلمه عبور خود را وارد کنید" required>
+        <button type="button" class="toggle-pass" id="togglePass" aria-controls="password" aria-label="نمایش یا مخفی‌سازی کلمه عبور">نمایش</button>
+      </div>
+
+      <div class="actions">
+        <a href="#" class="forgot">فراموشی رمز؟</a>
+      </div>
+
+      <div id="error" class="alert" role="alert" aria-live="assertive" style="display:none"></div>
+
+      <button type="submit" id="submitBtn" disabled>ورود</button>
+    </form>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('loginForm');
+      const username = document.getElementById('username');
+      const password = document.getElementById('password');
+      const submit = document.getElementById('submitBtn');
+      const err = document.getElementById('error');
+      const toggle = document.getElementById('togglePass');
+
+      function updateState(){
+        submit.disabled = !(username.value.trim() && password.value.trim());
+      }
+
+      username.addEventListener('input', updateState);
+      password.addEventListener('input', updateState);
+
+      toggle.addEventListener('click', function(){
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        // متن دکمه برای خوانایی: می‌توان جایگزین آیکون کرد
+        this.textContent = type === 'password' ? 'نمایش' : 'مخفی';
+      });
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        err.style.display='none';
+        // اعتبارسنجی سادهٔ نمونه
+        const u = username.value.trim();
+        const p = password.value;
+        if(!u || !p){
+          showError('نام کاربری و رمز نمی‌توانند خالی باشند.');
+          return;
+        }
+        // شبیه‌سازی ورود: username=user pass=pass
+        if(u === 'user' && p === 'pass'){
+          // در حالت واقعی به سرور ارسال کنید
+          alert('موفق!');
+        } else {
+          showError('نام کاربری یا کلمهٔ عبور اشتباه است.');
+        }
+      });
+
+      function showError(msg){
+        err.textContent = msg;
+        err.style.display = 'block';
+      }
+
+      // دسترسی کلید Enter برای ارسال وقتی هر دو فیلد پر است
+      [username,password].forEach(el=>el.addEventListener('keydown',function(e){
+        if(e.key === 'Enter' && !submit.disabled){
+          e.preventDefault();
+          submit.click();
+        }
+      }));
+
+      // اولیه
+      updateState();
+    })();
+  </script>
+</body>
+</html>
